@@ -1,5 +1,7 @@
 # js-jupyter-client
 
+not ready yet!!!!!!
+
 ## Project setup
 ```
 npm install

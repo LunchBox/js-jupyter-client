@@ -15,7 +15,10 @@
 				<tr v-for="file in fileList" :key="file.fileName">
 					<td></td>
 					<td>
-						<a :class="{ 'is-folder': file.isDirectory }" href="">
+						<router-link v-if="file.isDirectory" :to="pathOf(file)">
+							{{ file.fileName }}
+						</router-link>
+						<a v-else href="">
 							{{ file.fileName }}
 						</a>
 					</td>
@@ -28,18 +31,32 @@
 </template>
 
 <script>
-	import { ref } from "vue";
+	import { ref, computed, watch } from "vue";
+	import { useRoute } from "vue-router";
 	import axios from "axios";
+	import path from "path";
 
 	export default {
 		setup() {
 			const fileList = ref([]);
 
+			const route = useRoute();
+			console.log(route);
+			console.log(route.path);
+
+			const filePath = computed(() => route.params.path);
+
 			async function loadFiles() {
-				const res = await axios.get("/api/");
+				const res = await axios.get("/api/files", {
+					params: {
+						path: filePath.value,
+					},
+				});
 				fileList.value = res.data;
 			}
 			loadFiles();
+
+			watch(() => route.params.path, loadFiles);
 
 			async function createFolder() {
 				let fileName = "Untitled Folder";
@@ -50,6 +67,7 @@
 				}
 
 				const res = await axios.post("/api/files", {
+					path: filePath.value,
 					fileName,
 					isDirectory: true,
 				});
@@ -58,10 +76,17 @@
 				loadFiles();
 			}
 
+			function pathOf(file) {
+				const currentPath = filePath.value || "";
+				const targetPath = path.join(currentPath, file.fileName);
+				return `/tree/${targetPath}`;
+			}
+
 			return {
 				fileList,
 
 				createFolder,
+				pathOf,
 			};
 		},
 	};
