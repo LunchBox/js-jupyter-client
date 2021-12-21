@@ -5,7 +5,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th></th>
+					<th style="width: 1em"></th>
 					<th>Name</th>
 					<th>Last Modified</th>
 					<th>File size</th>
@@ -13,7 +13,9 @@
 			</thead>
 			<tbody>
 				<tr v-for="file in fileList" :key="file.fileName">
-					<td></td>
+					<td>
+						<input type="checkbox" />
+					</td>
 					<td>
 						<router-link v-if="file.isDirectory" :to="pathOf(file)">
 							{{ file.fileName }}
@@ -96,12 +98,22 @@
 	table {
 		width: 100%;
 		margin: 1em 0;
+
+		border: 1px solid #ddd;
+		border-collapse: collapse;
+		border-spacing: 0;
+
+		line-height: 1.5;
 	}
 
 	table th,
 	table td {
 		border-bottom: 1px solid #ddd;
 		text-align: left;
+	}
+
+	table th {
+		background: #eee;
 	}
 
 	a {
